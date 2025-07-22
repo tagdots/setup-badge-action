@@ -1,0 +1,118 @@
+---
+
+name: cron-tasks
+
+on:
+  schedule:
+    - cron: '30 3 * * 0'
+
+  workflow_dispatch:
+
+permissions:
+    actions: read
+    contents: read
+    issues: read
+    pull-requests: read
+
+jobs:
+  stale-workflows:
+  # https://github.com/Mattraks/delete-workflow-runs
+
+    permissions:
+      contents: read
+      actions: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - id: stale-workflows
+      uses: Mattraks/delete-workflow-runs@39f0bbed25d76b34de5594dceab824811479e5de # v2.0.6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        retain_days: 5
+        keep_minimum_runs: 8
+
+  stale-issues-prs:
+  # https://github.com/actions/stale
+
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - id: stale-issues-prs
+      uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+      with:
+        stale-issue-message: 'This issue is stale because it has been open 5 days with no activity. Remove stale label or comment or this will be closed in 3 days after stale'
+        days-before-stale: 5
+        days-before-close: 3
+        operations-per-run: 40
+
+  stale-branches:
+  # https://github.com/crs-k/stale-branches
+
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - id: stale-branches
+      uses: crs-k/stale-branches@de68d9358068be991f64ad9058487e2484925d9a # v8.2.1
+      with:
+        # days-before-stale cannot be greater than or equal to days-before-delete
+        branches-filter-regex: '^((?!main|badge))'
+        days-before-stale: 4
+        days-before-delete: 6
+        include-protected-branches: true
+        pr-check: true
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-slack:
+    if: always()
+    needs: [stale-workflows, stale-issues-prs, stale-branches]
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      WORKFLOW_RESULT: ${{ steps.get-previous-jobs-results.outputs.WORKFLOW_RESULT }}
+
+    steps:
+
+    - name: Get Overall Jobs Results
+      id: get-overall-jobs-results
+      shell: bash
+      run: |
+        # get overall result from all of the previous jobs
+        if "${{ needs.stale-workflows.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' }}"; then
+          echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
+        else
+          echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Post message to Slack
+      uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+      with:
+        method: chat.postMessage
+        token: "${{ secrets.SECRET_SLACK_APP_GITHUB_BOT }}"
+        payload: |
+          channel: "${{ secrets.SECRET_SLACK_CHANNEL_CRON_TASKS }}"
+          text: "
+              *Repository: ${{ github.repository }}*\n
+              *Workflow : ${{ github.workflow }} ${{ steps.get-overall-jobs-results.outputs.WORKFLOW_RESULT }}*
+              ```
+              URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
+              Job: stale-workflows  - ${{ needs.stale-workflows.result }}\n
+              Job: stale-issues-prs - ${{ needs.stale-issues-prs.result }}\n
+              Job: stale-branches   - ${{ needs.stale-branches.result }}
+              ```"
