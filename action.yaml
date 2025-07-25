@@ -1,0 +1,102 @@
+name: setup-badge-action
+
+description: 'Run setup-badge to showcase badges on your README file'
+
+author: tagdots
+
+branding:
+  icon: award
+  color: green
+
+inputs:
+  badge-name:
+    description: "Badge Name"
+    default: "badge"
+
+  badge-branch:
+    description: "Badge Branch"
+    default: "badges"
+
+  badge-style:
+    description: "Badge Style (flat, flat-square, plastic, for-the-badge, social)"
+    default: "flat"
+
+  badge-url:
+    description: "Badge Clickable URL"
+    default: ""
+
+  label:
+    description: "Left side text"
+    default: "demo"
+
+  label-color:
+    description: "Left side background color (hex color)"
+    default: "2e2e2e"
+
+  message:
+    description: "Right side text"
+    default: "no status"
+
+  message-color:
+    description: "Right side background color (hex color)"
+    default: "2986CC"
+
+  remote-name:
+    description: "Remote Name"
+    default: "origin"
+
+  gitconfig-name:
+    description: "Git config user name"
+    default: "Mona Lisa"
+
+  gitconfig-email:
+    description: "Git config user email"
+    default: "mona.lisa@github.com"
+
+runs:
+  using: "composite"
+
+  steps:
+
+  - name: Checkout source code
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  - name: Install Python
+    uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+    with:
+      python-version: '3.12.x'
+
+  - name: Install the latest setup-badge
+    shell: bash
+    run: python -m pip install -U pkg-18604
+
+  - name: Run setup-badge to show version
+    shell: bash
+    run: setup-badge --version
+
+  - name: Run setup-badge
+    shell: bash
+    env:
+      INPUT_BADGE_NAME: "${{ inputs.badge-name }}"
+      INPUT_BADGE_BRANCH: "${{ inputs.badge-branch }}"
+      INPUT_BADGE_STYLE: "${{ inputs.badge-style }}"
+      INPUT_BADGE_URL: "${{ inputs.badge-url }}"
+      INPUT_LABEL: "${{ inputs.label }}"
+      INPUT_LABEL_COLOR: "${{ inputs.label-color }}"
+      INPUT_MESSAGE: "${{ inputs.message }}"
+      INPUT_MESSAGE_COLOR: "${{ inputs.message-color }}"
+      INPUT_REMOTE_NAME: "${{ inputs.remote-name }}"
+      INPUT_GITCONFIG_NAME: "${{ inputs.gitconfig-name }}"
+      INPUT_GITCONFIG_EMAIL: "${{ inputs.gitconfig-email }}"
+    run: |
+      setup-badge \
+        --badge-name "$INPUT_BADGE_NAME" \
+        --badge-branch "$INPUT_BADGE_BRANCH" \
+        --badge-style "$INPUT_BADGE_STYLE" \
+        --badge-url "$INPUT_BADGE_URL" \
+        --label "$INPUT_LABEL" \
+        --label-color "$INPUT_LABEL_COLOR" \
+        --message "$INPUT_MESSAGE" \
+        --message-color "$INPUT_MESSAGE_COLOR" \
+        --gitconfig-name "$INPUT_GITCONFIG_NAME" \
+        --gitconfig-email "$INPUT_GITCONFIG_EMAIL"
