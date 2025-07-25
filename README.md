@@ -1,11 +1,6 @@
 # setup-badge-action
 
-<!--
 [![CI](https://github.com/tagdots/setup-badge/actions/workflows/ci.yaml/badge.svg)](https://github.com/tagdots/setup-badge/actions/workflows/ci.yaml)
-[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/badges/badges/coverage.json)](https://github.com/tagdots/setup-badge/actions/workflows/cron-badges.yaml)
-![Language](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/badges/badges/language.json)
-[![License](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/badges/badges/license.json)](https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/main/LICENSE)
--->
 
 This action runs [setup-badge](https://github.com/tagdots/setup-badge) to generate badges to showcase on your README.
 
