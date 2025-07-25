@@ -45,7 +45,7 @@ jobs:
       id: update-pre-commit
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: tagdots/update-pre-commit-action@2cd407af92c1c9435c6406f4e23657d3ea14dcbb # 1.0.1
+      uses: tagdots/update-pre-commit-action@0da91de0a91c4d24cac35b8576fba69e7abc2365 # 1.0.16
       with:
         file: .pre-commit-config.yaml
         dry-run: false
