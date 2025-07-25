@@ -68,7 +68,7 @@ runs:
 
   - name: Install the latest setup-badge
     shell: bash
-    run: python -m pip install -U pkg-18604
+    run: python -m pip install -U setup-badge
 
   - name: Run setup-badge to show version
     shell: bash
