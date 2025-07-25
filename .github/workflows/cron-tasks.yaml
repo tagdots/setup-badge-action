@@ -16,7 +16,6 @@ permissions:
 
 jobs:
   stale-workflows: # https://github.com/Mattraks/delete-workflow-runs
-
     runs-on: ubuntu-latest
 
     permissions:
@@ -33,7 +32,6 @@ jobs:
         keep_minimum_runs: 8
 
   update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
-
     runs-on: ubuntu-latest
 
     permissions:

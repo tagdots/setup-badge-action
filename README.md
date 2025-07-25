@@ -1,6 +1,10 @@
 # setup-badge-action
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10951/badge)](https://www.bestpractices.dev/projects/10951)
 [![CI](https://github.com/tagdots/setup-badge/actions/workflows/ci.yaml/badge.svg)](https://github.com/tagdots/setup-badge/actions/workflows/ci.yaml)
+[![marketplace](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/badges/badges/marketplace.json)](https://github.com/marketplace/actions/setup-badge-action)
+[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/badges/badges/coverage.json)](https://github.com/tagdots/setup-badge/actions/workflows/cron-tasks.yaml)
+
 
 This action runs [setup-badge](https://github.com/tagdots/setup-badge) to generate badges to showcase on your README.
 
@@ -55,7 +59,7 @@ jobs:
 
     steps:
     - id: language-badge
-      uses: tagdots/setup-badge-action@main
+      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
       with:
         badge-name: language
         label: Language
@@ -69,7 +73,7 @@ jobs:
 
     steps:
     - id: license-badge
-      uses: tagdots/setup-badge-action@main
+      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
       with:
         badge-name: license
         badge-url: https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/main/LICENSE
@@ -81,7 +85,7 @@ jobs:
 <br><br>
 
 ### Example 2️⃣ - summary
-The **setup-badge-action** workflow below will:
+**setup-badge-action** will:
 
 * run `on schedule at 5:30 pm UTC` or `on demand`
 * run a coverage test and get the coverage percentage from the test result
@@ -117,10 +121,10 @@ jobs:
 
     - id: get-coverage-results
       run: |
-        echo "COV_PER=$(get-coverage-results)" >> "$GITHUB_OUTPUT"
+        echo "COV_PER=$(...coverage run results...)" >> "$GITHUB_OUTPUT"
 
     - id: coverage-badge
-      uses: tagdots/setup-badge-action@main
+      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
       with:
         badge-name: coverage
         label: "Code Coverage"
