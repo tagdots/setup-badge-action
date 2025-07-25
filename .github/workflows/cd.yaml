@@ -1,0 +1,112 @@
+---
+
+name: CD
+
+on:  # yamllint disable-line rule:truthy
+
+  pull_request:
+
+    branches:
+      - main
+
+    types:
+      - closed
+
+permissions:
+  contents: read
+
+jobs:
+
+  push-git-tag:
+    # ISSUE - failed-CI release branch, if merged, can continue through this CD workflow
+    if: ${{ startsWith(github.head_ref, 'release/') && github.event.pull_request.merged == true }}
+
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+    permissions:
+      contents: write
+
+    outputs:
+      VERSION: ${{ steps.set-tag.outputs.VERSION }}
+
+    steps:
+
+    - name: Generate a token from Github App
+      # instead of PAT, github_app_id and github_app_pem_file are used by this workflow because
+      # we have tag-based ruleset in place to restrict ACTOR from bypassing tag protection
+      # not for private repo but it is here for consistency reason.
+      id: generate-token
+      uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+      with:
+        app-id: ${{ secrets.SECRET_GITHUB_APP_ID }}
+        private-key: ${{ secrets.SECRET_GITHUB_APP_PEM_FILE }}
+
+    - name: Checkout source code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        token: ${{ steps.generate-token.outputs.token }}
+
+    - id: set-tag
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+      run: |
+        # parse out the version
+        GITHUB_SPEC_VER=${GITHUB_HEAD_REF#release/}
+        echo "VERSION=${GITHUB_SPEC_VER}" >> "$GITHUB_OUTPUT"
+
+        # create and push a lightweight tag
+        git tag ${GITHUB_SPEC_VER}
+        git push origin ${GITHUB_SPEC_VER}
+
+  notify-slack:
+    if: always()
+
+    needs: [push-git-tag]
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      WORKFLOW_RESULT: ${{ steps.get-previous-jobs-results.outputs.WORKFLOW_RESULT }}
+      TAG_NAME: ${{ steps.get-previous-jobs-results.outputs.TAG_NAME }}
+
+    steps:
+
+    - name: Get Overall Jobs Results
+      id: get-overall-jobs-results
+      shell: bash
+      run: |
+        # get overall result from all of the previous jobs
+        if "${{ needs.push-git-tag.result == 'success' }}"; then
+          echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
+        elif "${{ needs.push-git-tag.result == 'skipped' }}"; then
+          echo "WORKFLOW_RESULT=:fast_forward:" >> "$GITHUB_OUTPUT"
+        else
+          echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
+        fi
+
+        # get tag name
+        if ${{ needs.push-git-tag.outputs.VERSION == '' }}; then
+          echo "TAG_NAME=not-available" >> "$GITHUB_OUTPUT"
+        else
+          echo "TAG_NAME=${{ needs.push-git-tag.outputs.VERSION }}" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Post message to Slack
+      uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+      with:
+        method: chat.postMessage
+        token: "${{ secrets.SECRET_SLACK_APP_GITHUB_BOT }}"
+        payload: |
+          channel: "${{ secrets.SECRET_SLACK_CHANNEL_CICD }}"
+          text: "
+              *Repository: ${{ github.repository }}*\n
+              *Workflow : ${{ github.workflow }} ${{ steps.get-overall-jobs-results.outputs.WORKFLOW_RESULT }}*\n
+              *Tag Name : ${{ steps.get-overall-jobs-results.outputs.TAG_NAME }}*
+              ```
+              URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
+              Job: push-git-tag - ${{ needs.push-git-tag.result }}
+              ```"
