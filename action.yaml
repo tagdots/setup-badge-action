@@ -1,6 +1,6 @@
 name: setup-badge-action
 
-description: 'Run setup-badge to create shield.io endpoint badges to showcase on your README'
+description: 'Run setup-badge to create shields.io endpoint badges to showcase on your README'
 
 author: tagdots
 
