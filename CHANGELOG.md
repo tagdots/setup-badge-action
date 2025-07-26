@@ -1,3 +1,13 @@
+## 1.0.3 (2025-07-25)
+
+### Feat
+
+- add marketplace badge to cron-tasks
+
+### Fix
+
+- cron-tasks is missing badge-marketplace in overall results and slack message
+
 ## 1.0.2 (2025-07-25)
 
 ## 1.0.1 (2025-07-25)
