@@ -66,7 +66,7 @@ jobs:
 
   notify-slack:
     if: always()
-    needs: [stale-workflows, update-pre-commit]
+    needs: [badge-marketplace, stale-workflows, update-pre-commit]
 
     runs-on: ubuntu-latest
 
@@ -80,7 +80,7 @@ jobs:
       shell: bash
       run: |
         # get overall result from all of the previous jobs
-        if "${{ needs.stale-workflows.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
+        if "${{ needs.badge-marketplace.result == 'success' && needs.stale-workflows.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
           echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
         else
           echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -98,6 +98,7 @@ jobs:
               *Workflow : ${{ github.workflow }} ${{ steps.get-overall-jobs-results.outputs.WORKFLOW_RESULT }}*
               ```
               URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
+              Job: badge-marketplace - ${{ needs.badge-marketplace.result }}\n
               Job: stale-workflows   - ${{ needs.stale-workflows.result }}\n
               Job: update-pre-commit - ${{ needs.stale-branches.result }}
               ```"

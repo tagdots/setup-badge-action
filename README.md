@@ -12,7 +12,7 @@ This action runs [setup-badge](https://github.com/tagdots/setup-badge) to genera
 
 ## ⭐ How setup-badge-action works
 
-**setup-badge-action** triggers **setup-badge** workflow below.
+**setup-badge-action** runs **setup-badge** workflow below.
 
 1. **setup-badge** runs with [command line options](https://github.com/tagdots/setup-badge-action?tab=readme-ov-file#-setup-badge-command-line-options).
 1. **setup-badge** adds/updates a json file from your options.
@@ -54,6 +54,7 @@ permissions:
 jobs:
   language-badge:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -68,6 +69,7 @@ jobs:
 
   license-badge:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -109,6 +111,7 @@ permissions:
 jobs:
   coverage-badge:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
