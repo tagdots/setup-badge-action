@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - id: marketplace-badge
-      uses: tagdots/setup-badge-action@d450907c2ddc3c94b5eaed20f521eb4846475937 # 1.0.4
+      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
       with:
         badge-name: marketplace
         badge-url: https://github.com/marketplace/actions/setup-badge-action
@@ -58,7 +58,7 @@ jobs:
       id: update-pre-commit
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
+      uses: tagdots/update-pre-commit-action@0da91de0a91c4d24cac35b8576fba69e7abc2365 # 1.0.16
       with:
         file: .pre-commit-config.yaml
         dry-run: false
@@ -100,5 +100,5 @@ jobs:
               URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
               Job: badge-marketplace - ${{ needs.badge-marketplace.result }}\n
               Job: stale-workflows   - ${{ needs.stale-workflows.result }}\n
-              Job: update-pre-commit - ${{ needs.stale-branches.result }}
+              Job: update-pre-commit - ${{ needs.update-pre-commit.result }}
               ```"
