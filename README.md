@@ -19,7 +19,7 @@ This action runs [setup-badge](https://github.com/tagdots/setup-badge) to genera
 1. **setup-badge** pushes a commit to the remote branch.
 1. **endpoint badge** is created with `shields.io endpoint` and `your json file`.
 
-Now, you are ready to put the `endpoint badge` into your README file.
+Afterwards, you can put `endpoint badge` into your README file.
 
 ![How It Works](https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/main/assets/setup-badge.png)
 
@@ -32,14 +32,12 @@ Use the example workflows below to create your own workflow inside `.github/work
 <br>
 
 ### Example 1️⃣ - summary
-**setup-badge-action** will:
+**setup-badge-action**:
 
-* run `on demand`
-* create two static badges: `language` and `license`
-  * language badge does not have badge url
-  * license badge has a badge url that links to the LICENSE raw file
-
-<br>
+* runs `on demand`
+* creates two static badges: `language` and `license`
+  * language badge does not have a badge url
+  * license badge has a badge url that links to the project's LICENSE file
 
 ### Example 1️⃣ - create multiple static badges
 ```
@@ -60,7 +58,7 @@ jobs:
 
     steps:
     - id: language-badge
-      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
+      uses: tagdots/setup-badge-action@663d7a5382b8300caa4492de16e85aa7e4667ef0 # 1.0.3
       with:
         badge-name: language
         label: Language
@@ -75,7 +73,7 @@ jobs:
 
     steps:
     - id: license-badge
-      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
+      uses: tagdots/setup-badge-action@663d7a5382b8300caa4492de16e85aa7e4667ef0 # 1.0.3
       with:
         badge-name: license
         badge-url: https://raw.githubusercontent.com/tagdots/setup-badge/refs/heads/main/LICENSE
@@ -87,13 +85,11 @@ jobs:
 <br><br>
 
 ### Example 2️⃣ - summary
-**setup-badge-action** will:
+**setup-badge-action**:
 
-* run `on schedule at 5:30 pm UTC` or `on demand`
-* run a coverage test and get the coverage percentage from the test result
-* create a dynamic `Code Coverage` badge with the coverage % that changes over time
-
-<br>
+* runs `on schedule at 5:30 pm UTC` or `on demand`
+* runs a coverage test and get the coverage percentage from the test result
+* creates a dynamic `Code Coverage` badge with the coverage % that changes over time
 
 ### Example 2️⃣ - create a dynamic badge
 ```
@@ -127,7 +123,7 @@ jobs:
         echo "COV_PER=$(...coverage run results...)" >> "$GITHUB_OUTPUT"
 
     - id: coverage-badge
-      uses: tagdots/setup-badge-action@3989b8b5c1c81c961b76d125c8ea50fc7739d9cf # 1.0.0
+      uses: tagdots/setup-badge-action@663d7a5382b8300caa4492de16e85aa7e4667ef0 # 1.0.3
       with:
         badge-name: coverage
         label: "Code Coverage"
@@ -158,6 +154,11 @@ jobs:
 ## 😕  Troubleshooting
 
 We are here to help - open an [issue](https://github.com/tagdots/setup-badge-action/issues)
+
+<br>
+
+## 🙌 Appreciation
+If you find this project helpful, please ⭐ star it.  **Thank you**.
 
 <br>
 
