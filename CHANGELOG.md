@@ -1,3 +1,10 @@
+## 1.0.12 (2025-08-15)
+
+### Fix
+
+- replace the cron task that deletes workflow runs
+- correct wrong cron-tasks > slack-github-action > update-pre-commit result
+
 ## 1.0.4 (2025-07-26)
 
 ## 1.0.3 (2025-07-25)
