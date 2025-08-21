@@ -1,3 +1,13 @@
+## 1.0.17 (2025-08-20)
+
+### Fix
+
+- minor typo in cron-tasks
+- add fail-on-severity configuration to report low level vulnerabilities
+- fix the stuck version comment on codeql-action at v3.29.5
+- add stale-branches and stale-issues-prs
+- minor typo issues in actions
+
 ## 1.0.12 (2025-08-15)
 
 ### Fix
