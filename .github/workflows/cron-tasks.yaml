@@ -38,7 +38,6 @@ jobs:
       contents: read
 
     steps:
-
     - name: Run stale-workflow-runs
       id: stale-workflow-runs
       uses: tagdots/delete-workflow-runs-action@563f02090cdf93da6798bcf304238e8ac383c49e # 1.0.2
@@ -55,6 +54,44 @@ jobs:
       run: |
         # get data from the last step to set GITHUB_OUTPUT
         cat data_dict.log | jq .
+
+  stale-issues-prs: # https://github.com/actions/stale
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+    - name: Run stale-issues-prs
+      id: stale-issues-prs
+      uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+      with:
+        stale-issue-message: 'This issue is stale because it has been open 5 days with no activity. Remove stale label or comment or this will be closed in 3 days after stale'
+        days-before-stale: 5
+        days-before-close: 3
+        delete-branch: true
+
+  stale-branches: # https://github.com/tagdots/delete-branches-action
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+    - name: Run stale-branches
+      id: stale-branches
+      uses: tagdots/delete-branches-action@fad59ec4b73f3a47a2b8687ec8613e25a832debc # 1.0.2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        repo-url: ${{ github.repository }}
+        max-idle-days: 10
+        exclude-branches: 'badges'
+        dry-run: false
 
   update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
     runs-on: ubuntu-latest
@@ -76,7 +113,7 @@ jobs:
 
   notify-slack: # https://github.com/slackapi/slack-github-action
     if: always()
-    needs: [badge-marketplace, stale-workflow-runs, update-pre-commit]
+    needs: [badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
 
     runs-on: ubuntu-latest
 
@@ -90,7 +127,7 @@ jobs:
       shell: bash
       run: |
         # get overall result from all of the previous jobs
-        if "${{ needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
+        if "${{ needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branchess.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
           echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
         else
           echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -110,5 +147,7 @@ jobs:
               URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
               Job: badge-marketplace   - ${{ needs.badge-marketplace.result }}\n
               Job: stale-workflow-runs - ${{ needs.stale-workflow-runs.result }}\n
+              Job: stale-issues-prs    - ${{ needs.stale-issues-prs.result }}\n
+              Job: stale-branches      - ${{ needs.stale-branches.result }}\n
               Job: update-pre-commit   - ${{ needs.update-pre-commit.result }}
               ```"
