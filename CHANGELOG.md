@@ -1,3 +1,10 @@
+## 1.0.18 (2025-11-08)
+
+### Fix
+
+- upgrade to use Python3.14
+- update cron-tasks - delete-workflow-runs and delete-branches
+
 ## 1.0.17 (2025-08-20)
 
 ### Fix
