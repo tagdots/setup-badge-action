@@ -1,0 +1,29 @@
+---
+# NOTE: this file is managed by terraform
+
+changelog:
+  exclude:
+    authors:
+      - tagdots-owner
+
+  categories:
+    - title: "🚀 New features"
+      labels:
+        - feature
+    - title: "🎉 Change features"
+      labels:
+        - enhancement
+    - title: "🐛 Fixes"
+      labels:
+        - fix
+        - hotfix
+        - bugfix
+    - title: "🛠️ Maintenance"
+      labels:
+        - dependencies
+    - title: "👒 Others"
+      labels:
+        - build
+        - documentation
+        - style
+        - test
