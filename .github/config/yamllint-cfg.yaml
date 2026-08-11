@@ -1,0 +1,15 @@
+---
+# NOTE: Terraform-managed template
+# ref: https://github.com/marketplace/actions/yaml-lint
+
+extends: default
+
+ignore: |
+  tests/
+
+rules:
+  line-length:
+    max: 125
+    level: warning
+
+  indentation: disable
