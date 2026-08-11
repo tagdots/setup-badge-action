@@ -1,14 +1,14 @@
 ---
-
 name: re-pre-commit
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   workflow_call:
 
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: '3.12.x'
+  HADOLINT_VERSION: "v2.15.1"
+  PYTHON_VERSION: "3.14.x"
 
 permissions:
   contents: read
@@ -18,48 +18,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout source code # https://github.com/marketplace/actions/checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Checkout source code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Python # https://github.com/marketplace/actions/setup-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Setup Python
-      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      # --------------------------------------------------------------------------- #
+      - name: Install hadolint
+        shell: bash
+        run: |
+          wget -O hadolint https://github.com/hadolint/hadolint/releases/download/${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64
+          chmod +x hadolint
+          sudo mv hadolint /usr/bin/
+          hadolint --version
 
-    - shell: bash
-      run: |
-        # install packages
-        python -m pip install -U pip
-        python -m pip install pre_commit
+      - name: Setup pre-commit
+        shell: bash
+        run: python -m pip install -r requirements.txt
 
-    - name: Run pre-commit on everything
-      run: pre-commit run -a -v
+      - name: Run pre-commit on everything
+        shell: bash
+        run: pre-commit run -a -v
+      # --------------------------------------------------------------------------- #
 
   add-on-checkov:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout source code # https://github.com/marketplace/actions/checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Checkout source code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-    - name: Run Checkov Github Action
-      id: checkov
-      uses: bridgecrewio/checkov-action@7b972723c44fb3d256283fac96fae5d7c1894bb7 # v12.3114.0
-      with:
-        log_level: WARNING
-        quiet: false
-        skip_results_upload: "true"
-        enable_secrets_scan_all_files: "true"
-        skip_check: CKV_GIT_1,CKV_GIT_3,CKV_GIT_5,CKV_GIT_6,CKV2_GIT_1,CKV2_GHA_1,CKV_DOCKER_2,CKV_DOCKER_3
-        # Skip Check Details
-        # ID           Description
-        # CKV_GIT_1    - Ensure GitHub repository is Private
-        # CKV_GIT_3    - Ensure GitHub Repository defined in Terraform have vulnerability alerts enabled
-        # CKV_GIT_5    - Ensure GitHub pull requests should require at least 2 approvals
-        # CKV_GIT_6    - Ensure GitHub branch protection rules requires signed commits
-        # CKV2_GIT_1   - Ensure each Repository has branch protection associated
-        # CKV2_GHA_1   - Ensure top-level permissions are not set to write-all
-        # CKV_DOCKER_2 - Ensure that HEALTHCHECK instructions have been added to container images
-        # CKV_DOCKER_3 - Ensure that a user for the container has been created
+      - name: Run checkov # https://github.com/marketplace/actions/checkov-github-action
+        id: checkov
+        uses: bridgecrewio/checkov-action@9b70310bcd306d11740313070b940167d6b23085 # v12.3115.0
+        with:
+          log_level: WARNING
+          quiet: false
+          skip_results_upload: "true"
+          enable_secrets_scan_all_files: "true"
+          skip_check: CKV_GIT_1,CKV_GIT_3,CKV_GIT_5,CKV_GIT_6,CKV2_GIT_1,CKV2_GHA_1,CKV_DOCKER_2,CKV_DOCKER_3
+          # Skip Check Details
+          # ID           Description
+          # CKV_GIT_1    - Ensure GitHub repository is Private
+          # CKV_GIT_3    - Ensure GitHub Repository defined in Terraform have vulnerability alerts enabled
+          # CKV_GIT_5    - Ensure GitHub pull requests should require at least 2 approvals
+          # CKV_GIT_6    - Ensure GitHub branch protection rules requires signed commits
+          # CKV2_GIT_1   - Ensure each Repository has branch protection associated
+          # CKV2_GHA_1   - Ensure top-level permissions are not set to write-all
+          # CKV_DOCKER_2 - Ensure that HEALTHCHECK instructions have been added to container images
+          # CKV_DOCKER_3 - Ensure that a user for the container has been created
