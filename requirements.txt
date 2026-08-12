@@ -1,0 +1,2 @@
+commitizen~=4.17.0
+pre_commit~=4.6.2
