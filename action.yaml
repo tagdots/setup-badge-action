@@ -1,6 +1,6 @@
 name: setup-badge-action
 
-description: 'Run setup-badge to create shields.io endpoint badges to showcase on your README'
+description: "Run setup-badge to create shields.io endpoint badges to showcase on your README"
 
 author: tagdots
 
@@ -57,46 +57,45 @@ runs:
   using: "composite"
 
   steps:
+    - name: Checkout source code # https://github.com/marketplace/actions/checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-  - name: Checkout source code
-    uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - name: Setup Python # https://github.com/marketplace/actions/setup-python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: "3.14.x"
 
-  - name: Install Python
-    uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-    with:
-      python-version: '3.14.x'
+    - name: Install the latest setup-badge
+      shell: bash
+      run: python -m pip install -U setup-badge
 
-  - name: Install the latest setup-badge
-    shell: bash
-    run: python -m pip install -U setup-badge
+    - name: Run setup-badge to show version
+      shell: bash
+      run: setup-badge --version
 
-  - name: Run setup-badge to show version
-    shell: bash
-    run: setup-badge --version
-
-  - name: Run setup-badge
-    shell: bash
-    env:
-      INPUT_BADGE_NAME: "${{ inputs.badge-name }}"
-      INPUT_BADGE_BRANCH: "${{ inputs.badge-branch }}"
-      INPUT_BADGE_STYLE: "${{ inputs.badge-style }}"
-      INPUT_BADGE_URL: "${{ inputs.badge-url }}"
-      INPUT_LABEL: "${{ inputs.label }}"
-      INPUT_LABEL_COLOR: "${{ inputs.label-color }}"
-      INPUT_MESSAGE: "${{ inputs.message }}"
-      INPUT_MESSAGE_COLOR: "${{ inputs.message-color }}"
-      INPUT_REMOTE_NAME: "${{ inputs.remote-name }}"
-      INPUT_GITCONFIG_NAME: "${{ inputs.gitconfig-name }}"
-      INPUT_GITCONFIG_EMAIL: "${{ inputs.gitconfig-email }}"
-    run: |
-      setup-badge \
-        --badge-name "$INPUT_BADGE_NAME" \
-        --badge-branch "$INPUT_BADGE_BRANCH" \
-        --badge-style "$INPUT_BADGE_STYLE" \
-        --badge-url "$INPUT_BADGE_URL" \
-        --label "$INPUT_LABEL" \
-        --label-color "$INPUT_LABEL_COLOR" \
-        --message "$INPUT_MESSAGE" \
-        --message-color "$INPUT_MESSAGE_COLOR" \
-        --gitconfig-name "$INPUT_GITCONFIG_NAME" \
-        --gitconfig-email "$INPUT_GITCONFIG_EMAIL"
+    - name: Run setup-badge
+      shell: bash
+      env:
+        INPUT_BADGE_NAME: "${{ inputs.badge-name }}"
+        INPUT_BADGE_BRANCH: "${{ inputs.badge-branch }}"
+        INPUT_BADGE_STYLE: "${{ inputs.badge-style }}"
+        INPUT_BADGE_URL: "${{ inputs.badge-url }}"
+        INPUT_LABEL: "${{ inputs.label }}"
+        INPUT_LABEL_COLOR: "${{ inputs.label-color }}"
+        INPUT_MESSAGE: "${{ inputs.message }}"
+        INPUT_MESSAGE_COLOR: "${{ inputs.message-color }}"
+        INPUT_REMOTE_NAME: "${{ inputs.remote-name }}"
+        INPUT_GITCONFIG_NAME: "${{ inputs.gitconfig-name }}"
+        INPUT_GITCONFIG_EMAIL: "${{ inputs.gitconfig-email }}"
+      run: |
+        setup-badge \
+          --badge-name "$INPUT_BADGE_NAME" \
+          --badge-branch "$INPUT_BADGE_BRANCH" \
+          --badge-style "$INPUT_BADGE_STYLE" \
+          --badge-url "$INPUT_BADGE_URL" \
+          --label "$INPUT_LABEL" \
+          --label-color "$INPUT_LABEL_COLOR" \
+          --message "$INPUT_MESSAGE" \
+          --message-color "$INPUT_MESSAGE_COLOR" \
+          --gitconfig-name "$INPUT_GITCONFIG_NAME" \
+          --gitconfig-email "$INPUT_GITCONFIG_EMAIL"

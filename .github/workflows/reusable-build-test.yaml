@@ -1,9 +1,7 @@
 ---
-# this is a place-holder workflow in order to align action workflow to the overall CI process
-
 name: re-build-test
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   workflow_call:
     outputs:
       ARTIFACT_ID:
@@ -15,46 +13,45 @@ on:  # yamllint disable-line rule:truthy
       WORKFLOW_RUN_ID:
         value: ${{ jobs.build.outputs.WORKFLOW_RUN_ID }}
 
-
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: '3.12.x'
+  PYTHON_VERSION: "3.14.x"
 
 permissions:
   contents: read
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
     outputs:
       # ARTIFACT_ID and WORKFLOW_RUN_ID are here to align to the current CI validate-release job requirements
-      ARTIFACT_ID: '000-111-222'
-      WORKFLOW_RUN_ID: '000-111-333'
+      ARTIFACT_ID: "000-111-222"
+      WORKFLOW_RUN_ID: "000-111-333"
       BUILD_VERSION: ${{ steps.set-build-version.outputs.BUILD_VERSION }}
 
     steps:
+      - name: Checkout source code # https://github.com/marketplace/actions/checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Checkout source code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Python # https://github.com/marketplace/actions/setup-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install Commitizen
+        shell: bash
+        run: pip install -U commitizen
 
-    - name: Install Commitizen
-      run: pip install -U commitizen
+      - name: Set Build Version
+        id: set-build-version
+        shell: bash
+        run: |
+          echo "BUILD_VERSION=$(cz version -p)" >> "$GITHUB_OUTPUT"
 
-    # set and get build version
-    - name: Set Build Version
-      id: set-build-version
-      run: |
-        echo "BUILD_VERSION=$(cz version -p)" >> "$GITHUB_OUTPUT"
-
-    - name: Get Build Version
-      id: get-build-version
-      run: |
-        echo "Build Version: ${{ steps.set-build-version.outputs.BUILD_VERSION }}"
+      - name: Get Build Version
+        id: get-build-version
+        shell: bash
+        run: |
+          echo "Build Version: ${{ steps.set-build-version.outputs.BUILD_VERSION }}"
