@@ -1,5 +1,5 @@
 ---
-name: CD
+name: CD-staging
 
 on: # yamllint disable-line rule:truthy
   pull_request:
@@ -9,12 +9,17 @@ on: # yamllint disable-line rule:truthy
     types:
       - closed
 
+env:
+  PROJECT_NAME: setup-badge-action
+  PACKAGE_NAME: setup_badge_action
+  PYTHON_VERSION: "3.14.x"
+  UV_VERSION: "0.12.3"
+
 permissions:
   contents: read
 
 jobs:
   push-git-tag:
-    # ISSUE - failed-CI release branch, if merged, can continue through this CD workflow
     if: ${{ startsWith(github.head_ref, 'release/') && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
@@ -67,14 +72,16 @@ jobs:
       TAG_NAME: ${{ steps.get-overall-jobs-results.outputs.TAG_NAME }}
 
     steps:
-      - name: Get Overall Jobs Results
+      - name: Get overall jobs results
         id: get-overall-jobs-results
         shell: bash
         run: |
           # get overall result from all of the previous jobs
-          if "${{ needs.push-git-tag.result == 'success' }}"; then
+          if ${{
+            needs.push-git-tag.result == 'success' }}; then
             echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
-          elif "${{ needs.push-git-tag.result == 'skipped' }}"; then
+          elif ${{
+            needs.push-git-tag.result == 'skipped' }}; then
             echo "WORKFLOW_RESULT=:fast_forward:" >> "$GITHUB_OUTPUT"
           else
             echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -100,5 +107,5 @@ jobs:
                 *Tag Name : ${{ steps.get-overall-jobs-results.outputs.TAG_NAME }}*
                 ```
                 URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
-                Job: push-git-tag - ${{ needs.push-git-tag.result }}
+                Job: push-git-tag      - ${{ needs.push-git-tag.result }}\n
                 ```"
