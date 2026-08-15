@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   - package-ecosystem: github-actions
     directory: /
@@ -6,13 +7,13 @@ updates:
       interval: "cron"
       cronjob: "15 0 * * 0"
     open-pull-requests-limit: 1
+    rebase-strategy: "disabled"
     groups:
       github-actions:
         patterns:
           - "*"
     commit-message:
       prefix: "[GITHUB-ACTIONS] "
-    rebase-strategy: "disabled"
     allow:
       - dependency-type: "direct"
       - dependency-type: "indirect"
@@ -22,16 +23,16 @@ updates:
     directory: /
     schedule:
       interval: "cron"
-      cronjob: "15 1 * * 0"
+      cronjob: "15 0 * * 0"
     open-pull-requests-limit: 1
+    rebase-strategy: "disabled"
+    versioning-strategy: increase
     groups:
       pip:
         patterns:
           - "*"
     commit-message:
       prefix: "[PIP] "
-    rebase-strategy: "disabled"
-    versioning-strategy: increase
     allow:
       - dependency-type: "direct"
       - dependency-type: "indirect"
