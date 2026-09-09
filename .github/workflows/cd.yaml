@@ -13,7 +13,7 @@ env:
   PROJECT_NAME: setup-badge-action
   PACKAGE_NAME: setup_badge_action
   PYTHON_VERSION: "3.14.x"
-  UV_VERSION: "0.12.3"
+  UV_VERSION: "0.12.x"
 
 permissions:
   contents: read
@@ -63,7 +63,6 @@ jobs:
           git push origin ${GITHUB_SPEC_VER}
 
   notify-slack:
-    if: always()
     needs: [push-git-tag]
     runs-on: ubuntu-latest
 
